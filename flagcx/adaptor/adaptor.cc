@@ -7,7 +7,10 @@
 #include "adaptor.h"
 #include "core.h"
 #include "net.h"
+#include "param.h"
 #include <string.h>
+
+FLAGCX_PARAM(IbDisable, "IB_DISABLE", 0);
 
 #ifdef USE_NVIDIA_ADAPTOR
 #ifdef USE_BOOTSTRAP_ADAPTOR
@@ -33,7 +36,7 @@ struct flagcxCCLAdaptor *cclAdaptors[NCCLADAPTORS] = {&mpiAdaptor,
                                                       &hcclAdaptor};
 #endif
 struct flagcxDeviceAdaptor *deviceAdaptor = &cannAdaptor;
-#elif USE_ILUVATAR_COREX_ADAPTOR
+#elif USE_ILUVATAR_ADAPTOR
 #ifdef USE_BOOTSTRAP_ADAPTOR
 struct flagcxCCLAdaptor *cclAdaptors[NCCLADAPTORS] = {&bootstrapAdaptor,
                                                       &ixncclAdaptor};
@@ -195,7 +198,7 @@ struct flagcxNetAdaptor *getNetAdaptor(int netType) {
       return &flagcxNetIbuc;
 #elif USE_ACCL_BAREX
       // BAREX is the build-selected RDMA-class adaptor on PPU/vSolar hosts;
-      // FLAGCX_BAREX_DISABLE=1 falls back to socket at runtime.
+      // FLAGCX_IB_DISABLE=1 disables the RDMA class.
       return &flagcxNetBarex;
 #else
       return &flagcxNetIb;

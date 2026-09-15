@@ -47,27 +47,23 @@ flagcx_ci_require_rdma() {
 
   platform_name=$(basename "$SET_ENV_SCRIPT" .sh)
   case "$platform_name" in
-    cuda|metax|hygon) ;;
+    cuda|metax|hygon|ppu) ;;
     *) return 0 ;;
   esac
 
   case "$suite" in
-    adaptor|p2p|rma) ;;
+    adaptor|p2p|rma|runner|symmem) ;;
     *) return 0 ;;
   esac
 
-  echo "Running $platform_name RDMA preflight for unit-test suite: $suite"
-  if ! compgen -G "/sys/class/infiniband/*" >/dev/null ||
-    ! compgen -G "/dev/infiniband/uverbs*" >/dev/null; then
-    echo "$platform_name $suite tests require RDMA devices, but the runner did not expose /sys/class/infiniband and /dev/infiniband/uverbs* to the test container." >&2
+  echo "Running $platform_name static RDMA preflight for unit-test suite: $suite"
+  if ! declare -F flagcx_ci_validate_rdma >/dev/null; then
+    echo "$platform_name does not provide the required static RDMA validator." >&2
     return 1
   fi
+  flagcx_ci_validate_rdma "$suite"
 
-  if declare -F flagcx_ci_validate_rdma >/dev/null; then
-    flagcx_ci_validate_rdma "$suite"
-  fi
-
-  echo "RDMA preflight passed"
+  echo "Static RDMA preflight passed"
 }
 
 if declare -F flagcx_ci_prepare >/dev/null; then
