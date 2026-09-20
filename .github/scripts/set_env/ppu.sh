@@ -66,7 +66,7 @@ flagcx_ci_configure_suite() {
     p2p)
       # These suites call the IBRC vtable directly. The Engine tests use the
       # runtime transport selector and are retained for ACCL coverage.
-      export GTEST_FILTER="-P2pAdaptorStruct.*:P2pAdaptorTest.*:P2pLoopbackTest.*:P2pBatchStruct.*:P2pBatchTest.*:P2pEngineRpcIbTest.ConnectAcceptIsLocalSameHost"
+      export GTEST_FILTER="-P2pAdaptorStruct.*:P2pAdaptorTest.*:P2pLoopbackTest.*:P2pBatchStruct.*:P2pBatchTest.*:*P2pGpuReadTest.*:P2pEngineRpcIbTest.ConnectAcceptIsLocalSameHost"
       export FLAGCX_P2P_TRANSPORT=accl
       ;;
     rma)
@@ -89,8 +89,7 @@ flagcx_ci_run_suite_override() {
     FLAGCX_CI_MPI_LABEL="runner default" \
       env -u FLAGCX_USE_HOST_COMM -u FLAGCX_USE_HETERO_COMM \
       -u FLAGCX_CLUSTER_SPLIT_LIST -u FLAGCX_MEM_ENABLE \
-      -u FLAGCX_VMM_ENABLE -u FLAGCX_P2P_TRANSPORT \
-      -u FLAGCX_P2P_DISABLE \
+      -u FLAGCX_P2P_TRANSPORT -u FLAGCX_P2P_DISABLE \
       "$MPI_RUNNER" -np "$FLAGCX_CI_RUNNER_NP" --allow-run-as-root \
       ./build/bin/runner_mpi_tests
     FLAGCX_CI_MPI_LABEL="runner BAREX heterogeneous SendRecv smoke" \
@@ -118,6 +117,7 @@ flagcx_ci_run_suite_override() {
       -x FLAGCX_VMM_ENABLE=0 \
       -x FLAGCX_P2P_TRANSPORT=accl \
       -x FLAGCX_P2P_DISABLE=1 \
+      -x FLAGCX_CI_EXPECT_NET_ADAPTOR=BAREX \
       ./build/bin/runner_mpi_tests
     return
   fi
